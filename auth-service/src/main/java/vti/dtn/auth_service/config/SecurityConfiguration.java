@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import vti.dtn.auth_service.entity.enums.Role;
+import vti.dtn.auth_service.filter.JwtFilter;
 import vti.dtn.auth_service.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import vti.dtn.auth_service.oauth2.handler.OAuth2AuthenticationSuccessHandler;
 import vti.dtn.auth_service.oauth2.repository.HttpCookieOAuthorizationRequestRepository;
@@ -28,6 +29,7 @@ public class SecurityConfiguration {
             "/api/v1/auth/refresh-token"
     };
 
+    private final JwtFilter jwtFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final HttpCookieOAuthorizationRequestRepository httpCookieOAuthorizationRequestRepository;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -45,6 +47,7 @@ public class SecurityConfiguration {
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
                 .authorizationEndpoint()
                 .baseUri("/oauth2/authorize")
