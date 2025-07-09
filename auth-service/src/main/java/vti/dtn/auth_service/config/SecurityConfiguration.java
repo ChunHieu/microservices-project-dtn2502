@@ -26,7 +26,8 @@ public class SecurityConfiguration {
             "/oauth2/redirect",
             "/api/v1/auth/login",
             "/api/v1/auth/register",
-            "/api/v1/auth/refresh-token"
+            "/api/v1/auth/refresh-token",
+            "/user/me"
     };
 
     private final JwtFilter jwtFilter;
@@ -48,19 +49,20 @@ public class SecurityConfiguration {
                                 .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login()
-                .authorizationEndpoint()
-                .baseUri("/oauth2/authorize")
-                .authorizationRequestRepository(httpCookieOAuthorizationRequestRepository)
-                .and()
-                .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*")
-                .and()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-                .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler);
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint()
+                        .baseUri("/oauth2/authorize")
+                        .authorizationRequestRepository(httpCookieOAuthorizationRequestRepository)
+                        .and()
+                        .redirectionEndpoint()
+                        .baseUri("/oauth2/callback/*")
+                        .and()
+                        .userInfoEndpoint()
+                        .userService(customOAuth2UserService)
+                        .and()
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler))
+                .securityMatcher(WHITE_LIST_URL);
         return http.build();
     }
 }

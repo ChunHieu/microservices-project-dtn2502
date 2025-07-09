@@ -9,6 +9,9 @@ import java.util.Base64;
 import java.util.Optional;
 
 public class CookieUtils {
+    private CookieUtils() {
+        // Private constructor to prevent instantiation
+    }
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
